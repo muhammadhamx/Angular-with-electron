@@ -13,9 +13,14 @@ export class GreetingsComponent implements OnInit {
   greeting: string | null = null;
 
   greet(){
-    this.greeting = `Hello , ${this.name}!`
+    this.greeting = ` ${this.name} Fuck you !`
+  }
+
+  reload(){
+    this.greeting = ""
   }
   
+
   constructor() { }
 
   ngOnInit(): void {
