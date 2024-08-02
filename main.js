@@ -1,45 +1,107 @@
+// app.on('ready', function(){
+  
+//   // Getting the full size screen 
+//   const {width, height} = screen.getPrimaryDisplay().workAreaSize;
+
+//   //create a new window
+//   mainWindow = new BrowserWindow({
+//     width:width, 
+//     height:height,
+//     resizable: false,
+//     frame: false,
+//     webPreferences:{ nodeIntegration: true }
+//   });
+// // Load the file into electron
+  
+// mainWindow.loadURL(url.format({
+//     pathname: path.join(__dirname,'dist/electron/index.html'),
+//     protocol: 'file:',
+//     slashes: true
+//   }))
+
+//   // Building the Menu from the temlate
+//   const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+//   Menu.setApplicationMenu(mainMenu)
+// })
+
+// //creating new Window
+// function createAddWindows(){
+//   addWin = new BrowserWindow({
+//     width: 300,
+//     height: 200
+//   });
+//   // Load the file into electron
+//   addWin.loadURL(url.format({
+//       pathname: path.join(__dirname,'src/addwin.html'),
+//       protocol: 'file:',
+//       slashes: true
+//     }))
+//     addWin.on('close', function(){
+//       addWin = null
+//     })
+// }
+
+
+
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
 
-const {app,BrowserWindow, Menu} = electron;
+const {app,BrowserWindow, Menu , screen} = electron;
 
 let mainWindow;
-let addWin
-// Listen for app to be ready 
+let splashScreen;
+
 app.on('ready', function(){
-  //create a new window
-  mainWindow = new BrowserWindow({
-    width:1000, height:800,
+  
+  // Getting the full size screen 
+  const {width, height} = screen.getPrimaryDisplay().workAreaSize;
+
+  //create a new Splash Screen
+  splashScreen = new BrowserWindow({
+    width:600, 
+    height:500,
+    resizable: false,
+    frame: false,
     webPreferences:{ nodeIntegration: true }
   });
-// Load the file into electron
-  mainWindow.loadURL(url.format({
+  splashScreen.loadURL(url.format({
+    pathname: path.join(__dirname,'src/splash.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
+  // Main Window
+  mainWindow = new BrowserWindow({
+    // width: width,
+    // height: height,
+    fullscreen: true,
+    resizable: false,
+    show: false, // Don't show the main window until it's ready
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  mainWindow.loadURL(url.format(({
     pathname: path.join(__dirname,'dist/electron/index.html'),
     protocol: 'file:',
     slashes: true
-  }))
-  // Building the Menu from the temlate
-  const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
-  Menu.setApplicationMenu(mainMenu)
-})
+  })));
 
-//creating new Window
-function createAddWindows(){
-  addWin = new BrowserWindow({
-    width: 300,
-    height: 200
+  mainWindow.once('ready-to-show',()=>{
+    splashScreen.close();
+    mainWindow.show();
   });
-  // Load the file into electron
-  addWin.loadURL(url.format({
-      pathname: path.join(__dirname,'src/addwin.html'),
-      protocol: 'file:',
-      slashes: true
-    }))
-    addWin.on('close', function(){
-      addWin = null
-    })
-}
+
+  const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+  Menu.setApplicationMenu(mainMenu);
+
+  mainMenu.on('closed', function (){
+    app.quit()
+  })
+
+})
 
 // Making a costum Menu lable template
 const mainMenuTemplate = [
@@ -48,9 +110,6 @@ const mainMenuTemplate = [
     submenu:[
       {
         label: 'Add Items',
-        click(){
-          createAddWindows()
-        }
       },
       {
         label: 'Clear Items'
