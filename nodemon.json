@@ -1,0 +1,7 @@
+{
+    "watch": ["main.js", "main/**/*"],
+    "ext": "js,json,html,ts",
+    "ignore": ["dist/**/*"],
+    "exec": "electron ."
+  }
+  
